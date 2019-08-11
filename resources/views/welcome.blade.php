@@ -13,6 +13,9 @@
         <!-- Bootstrap core CSS -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     
+        <!-- Custom Css -->
+        <link rel="stylesheet" href="{{ asset('/css/style.css') }}">
+
     <style>
         .main-content{
             margin-top: 50px
@@ -111,6 +114,7 @@
                     </div>
                     <div class="card-footer">
                       <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
+                      <p class="btn-holder"><a href="{{ url('add-to-cart/'.$product->id) }}" class="btn btn-warning btn-block text-center" role="button">Add to cart</a> </p>
                     </div>
                   </div>
                 </div>
@@ -118,7 +122,60 @@
       
               </div>
               <!-- /.row -->
-      
+
+              <table id="cart" class="table table-hover table-condensed">
+                <thead>
+                  <tr>
+                      <th style="width:50%">Product</th>
+                      <th style="width:10%">Price</th>
+                      <th style="width:8%">Quantity</th>
+                      <th style="width:22%" class="text-center">Subtotal</th>
+                      <th style="width:10%"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php $total = 0 ?>
+ 
+                  @if(session('cart'))
+                      @foreach(session('cart') as $id => $details)
+           
+                          <?php $total += $details['price'] * $details['quantity'] ?>
+                          <tr>
+                              <td data-th="Product">
+                                  <div class="row">
+                                      <div class="col-sm-3 hidden-xs"><img src="data:image/png;base64,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" width="100" height="100" class="img-responsive"/></div>
+                                      <div class="col-sm-9">
+                                          <h4 style="margin-left: 12px;" class="nomargin">{{ $details['name'] }}</h4>
+                                      </div>
+                                  </div>
+                              </td>
+                              <td data-th="Price">${{ $details['price'] }}</td>
+                              <td data-th="Quantity">
+                                  <input type="number" value="{{ $details['quantity'] }}" class="form-control quantity" />
+                              </td>
+                              <td data-th="Subtotal" class="text-center">${{ $details['price'] * $details['quantity'] }}</td>
+                              <td class="actions" data-th="">
+                                  <button class="btn btn-info btn-sm update-cart" data-id="{{ $id }}"><i class="fa fa-refresh"></i></button>
+                                  <button class="btn btn-danger btn-sm remove-from-cart" data-id="{{ $id }}"><i class="fa fa-trash-o"></i></button>
+                              </td>
+                          </tr>
+
+                      @endforeach
+                    @endif
+
+                </tbody>
+                <tfoot>
+                  <tr class="visible-xs">
+                      <td class="text-center"><strong>Total {{ $total }}</strong></td>
+                  </tr>
+                  <tr>
+                      <td><a href="{{ url('/') }}" class="btn btn-warning"><i class="fa fa-angle-left"></i> Continue Shopping</a></td>
+                      <td colspan="2" class="hidden-xs"></td>
+                      <td class="hidden-xs text-center"><strong>Total ${{ $total }}</strong></td>
+                  </tr>
+                  </tfoot>
+              </table>
+                  
             </div>
             <!-- /.col-lg-9 -->
       
