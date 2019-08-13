@@ -18,7 +18,7 @@ class CreateOrdersTable extends Migration
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->decimal('total_price', 10, 2);
-            $table->unsignedInteger('coupon_id');
+            $table->unsignedInteger('coupon_id')->nullable();
             $table->foreign('coupon_id')->references('id')->on('coupons')->onDelete('cascade');
             $table->decimal('coupon_amount', 10, 2)->nullable();
             $table->decimal('paid_amount', 10, 2);
