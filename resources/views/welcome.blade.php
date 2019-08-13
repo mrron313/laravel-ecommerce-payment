@@ -48,6 +48,19 @@
                 <li class="nav-item">
                   <a class="nav-link" href="#">Contact</a>
                 </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link" href="{{ route('logout') }}"
+                    onclick="event.preventDefault();
+                                  document.getElementById('logout-form').submit();">
+                    {{ __('Logout') }}
+                  </a>
+
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                      <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                          @csrf
+                      </form>
+                  </div>
+              </li>
               </ul>
             </div>
           </div>
