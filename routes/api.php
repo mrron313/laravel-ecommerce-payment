@@ -1,4 +1,4 @@
 <?php
 
-use Illuminate\Http\Request;
+Route::post('otp-verify', 'Api\AccountKitController@smsVerify')->name('api.otp-verify');
 

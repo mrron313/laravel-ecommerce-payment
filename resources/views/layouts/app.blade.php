@@ -18,6 +18,24 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+    <script src="https://sdk.accountkit.com/en_US/sdk.js"></script>
+
+    <script>
+        // initialize Account Kit with CSRF protection
+        AccountKit_OnInteractive = function(){
+            AccountKit.init(
+                {
+                appId:"1283114428536031", 
+                state:"{{ csrf_token() }}", 
+                version:"v1.0",
+                fbAppEventsEnabled:true,
+                redirect:"http://ssl-laravel-arif.test/"
+                }
+            );
+            };
+    </script>
+
 </head>
 <body>
     <div id="app">
@@ -76,5 +94,69 @@
             @yield('content')
         </main>
     </div>
+
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.js"></script>
+
+        <script>
+
+            // login callback
+            function loginCallback(response) {
+              if (response.status === "PARTIALLY_AUTHENTICATED") {
+
+                $.ajax({
+                    method: 'post',
+                    url: '{{ route('api.otp-verify') }}',
+                    data: {'code': response.code, 'csrf': response.state}
+                }).done(function (response) {
+
+                    console.log(response);
+
+                    if (response['status'] === true) {
+                        
+                        console.log("reg form submitting");
+                        $.ajaxSetup({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            }
+                        });
+                        $.ajax({
+                            method: 'post',
+                            url: '{{ route('register') }}',
+                            data: {
+                                'name': document.getElementById("name").value, 
+                                'email': document.getElementById("email").value,
+                                'phone': response['phone']
+                            }
+                        }).done(function (response) {
+                            location.reload()
+                        });
+
+                    } else {
+                        swal("Error", response['message'], 'error');
+                    }
+                });
+
+              }
+              else if (response.status === "NOT_AUTHENTICATED") {
+                // handle authentication failure
+              }
+              else if (response.status === "BAD_PARAMS") {
+                // handle bad parameters
+              }
+            }
+          
+            // phone form submission handler
+            function smsLogin() {
+              var countryCode = '+880';
+              var phoneNumber = document.getElementById("phone").value;
+              AccountKit.login(
+                'PHONE', 
+                {countryCode: countryCode, phoneNumber: phoneNumber}, // will use default values if not specified
+                loginCallback
+              );
+            }
+          
+        </script>
+              
 </body>
 </html>
